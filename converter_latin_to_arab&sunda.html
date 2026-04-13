@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XSO - Nama ke Aksara Arab & Sunda</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0e2a2a 0%, #1e3a3a 100%);
+            font-family: 'Segoe UI', 'Amiri', 'Traditional Arabic', 'Sundanese Unicode', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.96);
+            border-radius: 40px;
+            padding: 32px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 25px 45px -12px rgba(0,0,0,0.5);
+            transition: all 0.2s;
+        }
+
+        h1 {
+            font-size: 26px;
+            color: #1f5e3a;
+            text-align: center;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .sub {
+            text-align: center;
+            color: #5e7e6a;
+            font-size: 13px;
+            margin-bottom: 28px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 12px;
+        }
+
+        .tab-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 28px;
+            background: #edf2f0;
+            border-radius: 60px;
+            padding: 5px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.2s;
+            color: #3b5e4b;
+            font-size: 15px;
+        }
+
+        .tab.active {
+            background: #1f5e3a;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .panel {
+            display: none;
+            animation: fade 0.2s ease;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        @keyframes fade {
+            from { opacity: 0; transform: translateY(5px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #1f5e3a;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            border: 2px solid #d0dbd4;
+            border-radius: 28px;
+            transition: all 0.2s;
+            background: #fefefe;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #1f5e3a;
+            box-shadow: 0 0 0 3px rgba(31,94,58,0.2);
+        }
+
+        button {
+            background: #1f5e3a;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 40px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+            margin-top: 6px;
+        }
+
+        button:hover {
+            background: #13452a;
+            transform: translateY(-2px);
+        }
+
+        .result-box {
+            background: #f1f6f3;
+            border-radius: 28px;
+            padding: 20px;
+            margin-top: 28px;
+            text-align: center;
+        }
+
+        .result-script {
+            font-size: 42px;
+            font-weight: 500;
+            background: white;
+            padding: 20px 12px;
+            border-radius: 24px;
+            word-break: break-word;
+            line-height: 1.4;
+            direction: rtl;
+            font-family: 'Amiri', 'Traditional Arabic', 'Segoe UI', sans-serif;
+        }
+
+        .result-latin {
+            font-size: 16px;
+            color: #2a5a42;
+            margin-top: 14px;
+            font-family: monospace;
+        }
+
+        .note {
+            font-size: 11px;
+            background: #e2ebe6;
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 40px;
+            margin-top: 18px;
+            color: #2b5a3e;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 11px;
+            margin-top: 20px;
+            color: #7c9a88;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>
+        <span>🖋️</span>
+        Aksara Nusantara + Arab
+        <span>🌏</span>
+    </h1>
+    <div class="sub">Latin → Aksara Sunda / Tulisan Arab (transliterasi)</div>
+
+    <!-- TAB -->
+    <div class="tab-bar">
+        <div class="tab active" data-tab="sunda">☀️ Aksara Sunda</div>
+        <div class="tab" data-tab="arab">🕋 Aksara Arab</div>
+    </div>
+
+    <!-- PANEL SUNDA -->
+    <div id="panel-sunda" class="panel active">
+        <div class="input-group">
+            <label>📛 Nama Latin</label>
+            <input type="text" id="namaSunda" placeholder="Contoh: Hendra, Siti, Ahmad, Jajang" autocomplete="off">
+        </div>
+        <button onclick="convertSunda()">🔁 Ubah ke Aksara Sunda</button>
+
+        <div class="result-box" id="resultSundaBox" style="display: none;">
+            <div class="result-script" id="sundaText" style="direction: ltr; font-family: 'Sundanese Unicode', 'Noto Sans Sundanese', sans-serif;">-</div>
+            <div class="result-latin" id="sundaLatin"></div>
+        </div>
+        <div class="note">📜 Aksara Sunda baku (Kaganga) berdasarkan pelafalan Sunda</div>
+    </div>
+
+    <!-- PANEL ARAB -->
+    <div id="panel-arab" class="panel">
+        <div class="input-group">
+            <label>📛 Nama Latin</label>
+            <input type="text" id="namaArab" placeholder="Contoh: Hendra, Kevin, Putri" autocomplete="off">
+        </div>
+        <button onclick="convertArab()">🔁 Ubah ke Aksara Arab</button>
+
+        <div class="result-box" id="resultArabBox" style="display: none;">
+            <div class="result-script" id="arabText" style="direction: rtl;">-</div>
+            <div class="result-latin" id="arabLatin"></div>
+        </div>
+        <div class="note">☪️ Berdasarkan bunyi (bukan terjemahan) → cocok untuk nama modern</div>
+    </div>
+
+    <footer>XSO Aksara Converter • Sunda + Arab</footer>
+</div>
+
+<script>
+    // ======================= AKSARA SUNDA (MAPPING) =======================
+    const sundaMap = [
+        { latin: "ng", sunda: "ᮍ" }, { latin: "ny", sunda: "ᮑ" }, { latin: "kh", sunda: "ᮮ" },
+        { latin: "sy", sunda: "ᮯ" }, { latin: "eu", sunda: "ᮉ" }, { latin: "a", sunda: "ᮃ" },
+        { latin: "b", sunda: "ᮘ" }, { latin: "c", sunda: "ᮎ" }, { latin: "d", sunda: "ᮓ" },
+        { latin: "e", sunda: "ᮈ" }, { latin: "f", sunda: "ᮕ᮪" }, { latin: "g", sunda: "ᮌ" },
+        { latin: "h", sunda: "ᮠ" }, { latin: "i", sunda: "ᮄ" }, { latin: "j", sunda: "ᮏ" },
+        { latin: "k", sunda: "ᮊ" }, { latin: "l", sunda: "ᮜ" }, { latin: "m", sunda: "ᮙ" },
+        { latin: "n", sunda: "ᮔ" }, { latin: "o", sunda: "ᮇ" }, { latin: "p", sunda: "ᮕ" },
+        { latin: "q", sunda: "ᮎᮥ" }, { latin: "r", sunda: "ᮛ" }, { latin: "s", sunda: "ᮞ" },
+        { latin: "t", sunda: "ᮒ" }, { latin: "u", sunda: "ᮅ" }, { latin: "v", sunda: "ᮖ᮪" },
+        { latin: "w", sunda: "ᮝ" }, { latin: "x", sunda: "ᮊ᮪ᮞ᮪" }, { latin: "y", sunda: "ᮚ" },
+        { latin: "z", sunda: "ᮐ" }
+    ];
+
+    function latinToSunda(str) {
+        if (!str) return "";
+        let s = str.toLowerCase().trim();
+        let result = "";
+        let i = 0;
+        while (i < s.length) {
+            let matched = false;
+            if (i + 1 < s.length) {
+                let two = s.substr(i, 2);
+                let found = sundaMap.find(m => m.latin === two);
+                if (found) {
+                    result += found.sunda;
+                    i += 2;
+                    matched = true;
+                    continue;
+                }
+            }
+            if (!matched) {
+                let one = s[i];
+                let found = sundaMap.find(m => m.latin === one);
+                result += found ? found.sunda : one;
+                i++;
+            }
+        }
+        return result;
+    }
+
+    function capitalize(str) {
+        if (!str) return "";
+        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    }
+
+    // ======================= AKSARA ARAB =======================
+    const arabMap = [
+        { latin: "kh", arab: "خ" }, { latin: "sh", arab: "ش" }, { latin: "dh", arab: "ذ" },
+        { latin: "th", arab: "ث" }, { latin: "gh", arab: "غ" }, { latin: "ng", arab: "ڠ" },
+        { latin: "ny", arab: "ڽ" }, { latin: "sy", arab: "ش" }, { latin: "ch", arab: "چ" },
+        { latin: "a", arab: "ا" }, { latin: "b", arab: "ب" }, { latin: "c", arab: "چ" },
+        { latin: "d", arab: "د" }, { latin: "e", arab: "ي" }, { latin: "f", arab: "ف" },
+        { latin: "g", arab: "ج" }, { latin: "h", arab: "ه" }, { latin: "i", arab: "ي" },
+        { latin: "j", arab: "ج" }, { latin: "k", arab: "ك" }, { latin: "l", arab: "ل" },
+        { latin: "m", arab: "م" }, { latin: "n", arab: "ن" }, { latin: "o", arab: "و" },
+        { latin: "p", arab: "ڤ" }, { latin: "q", arab: "ق" }, { latin: "r", arab: "ر" },
+        { latin: "s", arab: "س" }, { latin: "t", arab: "ت" }, { latin: "u", arab: "و" },
+        { latin: "v", arab: "ۏ" }, { latin: "w", arab: "و" }, { latin: "x", arab: "كس" },
+        { latin: "y", arab: "ي" }, { latin: "z", arab: "ز" }
+    ];
+
+    function latinToArab(str) {
+        if (!str) return "";
+        let s = str.toLowerCase().trim();
+        let res = "";
+        let i = 0;
+        while (i < s.length) {
+            let matched = false;
+            if (i + 1 < s.length) {
+                let two = s.substr(i, 2);
+                let found = arabMap.find(m => m.latin === two);
+                if (found) {
+                    res += found.arab;
+                    i += 2;
+                    matched = true;
+                    continue;
+                }
+            }
+            if (!matched) {
+                let one = s[i];
+                let found = arabMap.find(m => m.latin === one);
+                res += found ? found.arab : one;
+                i++;
+            }
+        }
+        return res;
+    }
+
+    // ======================= SUNDA =======================
+    function convertSunda() {
+        const input = document.getElementById('namaSunda').value.trim();
+        if (!input) {
+            alert("Masukkan nama dulu, XSO!");
+            return;
+        }
+        const original = capitalize(input);
+        const aksara = latinToSunda(input);
+        document.getElementById('sundaText').innerText = aksara || "—";
+        document.getElementById('sundaLatin').innerHTML = `${original} → ${aksara}`;
+        document.getElementById('resultSundaBox').style.display = "block";
+    }
+
+    // ======================= ARAB =======================
+    function convertArab() {
+        const input = document.getElementById('namaArab').value.trim();
+        if (!input) {
+            alert("Masukkan nama dulu, XSO!");
+            return;
+        }
+        const original = capitalize(input);
+        const aksara = latinToArab(input);
+        document.getElementById('arabText').innerText = aksara || "—";
+        document.getElementById('arabLatin').innerHTML = `${original} → ${aksara}`;
+        document.getElementById('resultArabBox').style.display = "block";
+    }
+
+    // ======================= TAB SWITCH =======================
+    function switchTab(tabId) {
+        document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
+        document.getElementById(`panel-${tabId}`).classList.add('active');
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+        document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
+    }
+
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const tabName = tab.getAttribute('data-tab');
+            switchTab(tabName);
+        });
+    });
+
+    // contoh default
+    window.addEventListener('load', () => {
+        document.getElementById('namaSunda').value = "Hendra";
+        document.getElementById('namaArab').value = "Hendra";
+        convertSunda();
+        convertArab();
+    });
+</script>
+</body>
+</html>
